@@ -1,0 +1,126 @@
+int mina();
+#Första code
+
+char incoming_value = 0;  // definiera vår teckenvariabel inkommande värde och vi gör den som en nolla.
+
+void setup()   //funktionsuppsättning.
+{
+
+  Serial.begin(9600);    // kommer att ansluta denna bluetooth till Arduino.
+
+  pinMode (13, OUTPUT);   // LED ansluten till stift nummer 13 på Arduino och vi säger pinMode 13 kommautgång för att konfiguera stift nummer 13 på Arduino som en output.
+
+}
+
+void lopp()  // detta är logiken detta om uttalanden i princip tar hand om vad man ska göra när du tryvket knappen.
+{
+
+  if(serial.available() > 0) // När vi trycker på knappen på mobilapp on knappen så kommer att skickar den ett tecken 1 eller nummer 1,
+                             // till bluetooth som är ansluten till Arduino
+  {
+
+  Incoming_value = serial.read (); // läser data och lagrar i inkommande värde variabel rätt.
+
+  Serial.print (Incoming_value); // skriva ut denna inkommade värdevariabel genom att säga seriell punktutskrift inkommande värde.
+
+  Serial.print ("\n");    // bara ge dig ingen ny rad så det kommer bara varje gång när vi trycker på knappen, kommer det nya värde 1 och 0 på en ny rad rätt.
+
+  if (Incoming_value == '1') // om inkommande värde är 1 då kommer att tern on LED som ansluten till pin nummer 13. 
+
+    digitalWrite (13, HIGH);
+
+  else if (Incoming_value == '0' ) // när vi trycker off knappen på monilapp kommer den att skicka en 0 till monilapp och det kommer att skicka en till bluetooth och
+                                   // Arduino , när Arduino tar emot värde på 0 så kommer att stänga av LED.
+    digitalWrite (13, LOW);
+  }
+}
+länk (https://www.youtube.com/watch?v=aQcJ4uHdQEA&ab_channel=BINARYUPDATES)
+
+
+
+
+
+#Andra code.
+
+const int analogInPin = A0;  // analog input pin that the potentionmeter is attached to.
+const int analogOutPin = 9; // analog output pin that the LED is attached to.
+
+int sensorValue = 0;  // value read from the pot
+int outputValue = 0;  // value outout ti the PWM (analog out)
+
+void setup()
+{
+  serial.begin (9600);   // initialize serial communications att 9600 bps:
+}
+
+void loop ()
+{
+  sensorValue = analogRead (analogInPin);  // read the analog in value.
+  outputValue = map (sensorValue, 0 , 1023, 0, 225);  // map it to the range of the analog out.
+  analogWrite (analogOutPin, outputValue); // change the analog out value.
+
+  // print the results to the serial monitor.
+    serial.print ("sensor = ");
+    serial.print (sensorValue);
+    serial.print ("\t output = ");
+    serial.println (outputValue);
+
+    // wait 2 milliseconds before the next loop for the analog-to-digital converter to settle after the last reading.
+    dalay(2);
+}
+länk (https://www.youtube.com/watch?v=nL34zDTPkcs&ab_channel=Afrotechmods)
+
+
+
+
+
+
+
+
+
+tredje code, anslut till data för on/off.    Arduino program.
+
+
+#Include <SoftwareSerial.h>
+
+SoftwareSerial hc06 (2, 3);
+string cmd= "";
+
+void setup()
+{
+  pinMode (4, OUTPUT);  // ställ in digital terminal nummer 4 på Arduino till output mode.
+  digitalWrite (4, LOW); // stäng av lampan.
+
+  serial.begin (9600);  // initiera seriell Arduino.
+  hc06.begin (9600);    // initiera seriell Bluetooth port.
+}  
+
+void loop ()
+{
+  while (hc06.available () > 0)  // läsa data from HC06.
+  {
+    cmd += (char) hc06.read ();
+  }  
+
+  // select function with cmd
+  if (cmd !="")
+  {
+    Serial.print ("Command recieved : ");
+    Serial.println ( cmd);
+
+    // we expect ON or OFF from bluetooth.
+    if (cmd.indexOf ("eteindre") !=-1)
+    {
+      digitalWrite (4, LOW); // turn off the lampa.
+      Serial,println ( "function is on");
+    }
+    else if (cmd.indexOf ("allumer") !=-1)
+    {
+      digitalWrite (4, HIGH);  // turn on the lampa.
+      Serial.println ( "function is off");
+    }
+    cmd = ""; // reset cmd
+    }
+    delay (100);
+ }
+länk (https://www.robotique.tech/robotics/switch-a-lamp-on-and-off-via-bluetooth-with-computer-and-arduino/)
